@@ -1,0 +1,62 @@
+SuperDuperMarkt
+
+1.) Die Klasse ProductBase
+
+Das wichtigste Datenmodel der Anwendung ist die Klasse ProductBase. Sie liefert die Eigenschaften Description (Bezeichnung), PriceBase (Grundpreis), 
+QualityBase (Grundqualität) und ExpireDate (Verfallsdatum).  Zusätzlich hat die Klasse ProductBase die Eigenschaft CreationDate, die bisher nur für Produkte
+vom Typ Käse benötigt wird. Käse verliert jeden Tag einen Qualitätspunkt. Um die Qualität für einem beliebigen Tag in der Zukunft berechnen zu können, ist 
+es erforderlich zu wissen, wann der Artikel in das Sortiment aufgenommen wurde. Das einzige andere Datum in der Klasse ist das Verfallsdatum, aber würde
+der Käse erst ab diesem Datum an Qualität verlieren, würde er aussortiert bevor sich seine Qualität ändert.
+
+Die Klasse ProductBase liefert zwei abstrakte Methoden. GetProductType liefert einen String zurück und wird bei Speichern und Laden der Produkte als CSV zur
+Identifizierung der Produktart benötigt. In der Methode CreateProductDaily sind die Verarbeitungsregeln hinterlegt. Die Methode benötigt beim Aufruf ein Datum
+als Parameter und liefert ein Objekt vom Typ ProductDaily zurück 
+
+ProductBase ist die Elternklasse für drei andere Klasse. WineProduct, CheeseProduct und BreadProduct.
+
+Durch die abstrakte Elternklasse werden die Kindklassen verpflichtet, die Methoden GetProductType und CreateProductDaily selbst zu implementieren. Somit erhält
+jede Art von Produkt eigene Verarbeitungsregeln.
+
+Die Eigenschaften eines Produkt-Objektes können nach der Instanziierung nicht mehr verändert werden. Sämtliche Informationen über zukünftige Qualität oder
+Preis liefert die Klasse ProductDaily.
+
+Vor der Ausgabe werden aus den Produkten Objekte der Klasse ProductViewModel erzeugt.
+Das dient ausschließlich dem Zweck, den Preis und das Datum ansprechend zu formatieren. 
+
+2.) Die Klasse ProductDaily
+
+Die Klasse ProductDaily verwaltet Informationen für ein Produkt für einen speziellen Tag, also mit dem tagesaktuellen Preis und der Qualität. Das sind die Eigenschaften 
+PriceDaily und QualityDaily. Der boolsche Wert IsSortedOut gibt an, ob ein Produkt aussortiert werden soll. Außerdem gibt es die Eigenschaft SortedOutReason in der
+hinterlegt wird, warum ein Produkt aussortiert werden muss.
+
+Die Klasse ProductDailyViewModel sorgt, ähnlich der Klasse ProductViewModel, für eine besser formatierte Ausgabe der ProductDaily.
+
+3.) Datenverwaltung
+
+Verwaltet werden sämtliche Produkte in einer Instanz der Klasse ProductRepository.
+
+Im Konstruktor benötigt ProductRepository ein Objekt einer Klasse, die das Interface IProductLoaderInterface implementiert. Dadurch werden die Methoden LoadProducts,
+SaveProducts und DefaultProducts vorgegeben, die vom ProductRepository aufgerufen werden. Aktuell implementiert nur die Klasse FileProductLoader das 
+IProductLoaderInterface. Sie läd die Produkte aus einer CSV-Datei. Mit diesem Design ist es möglich, auch alternative ProductLoader zu verwenden. Zum Beispiel um die 
+Produkte aus einer Datenbank oder von einem Webservice zu laden. Es muss lediglich ein anderer ProductLoader an das ProductRepository übergeben werden. 
+Wird keine CSV-Datei gefunden, werden die Produkte aus der Methode DefaultProducts verwendet.
+
+Das Repository Pattern würde es ermöglichen, die Produkte an einer zentralen Stelle zu filtern oder zu sortieren. Beides passiert in der Anwendung bisher nicht.
+
+4.) Verarbeitung
+
+Der Einstiegspunkt der Anwendung ist die Methode Run der Klasse SuperDuperMarktProgramm.
+Die Klasse SuperDuperMarktProgramm wurde im Singleton-Pattern entworfen. Es kann zur Laufzeit nur eine Instanz der Klasse erzeugt werden.
+
+Im ersten Schritt werden alle Produkte in das ProductRepository geladen. Das geschieht, wie zuvor erwähnt, mit Hilfe des  FileProductLoader. Anschließend werden alle 
+Produkte mit ihren Grundwerten ausgegeben. Die Methode CreateProductDaily erzeugt die Produktinformationen zwischen einem Zeitraum von einem Startdatum und 
+einem Endedatum. In zwei Schleifen werden sämtliche Produkte und alle Tage im Zeitraum durchlaufen und für die Produkte die Methode CreateProductDaily aufgerufen. 
+Anschließend erfolgt die Ausgabe der erzeugten ProductDaily für alle Produkte über alle Tage.
+
+Sämtliche Ausgaben auf der Konsole ist Aufgabe der Klasse ConsoleWriter.
+
+5.) Anmerkung
+
+Theoretisch wäre es denkbar, die Klasse ProductBase und ihre Kindklassen und ViewModels in eine eigene Library auszulagern. Dann wäre es möglich,
+die Verarbeitungsregeln unabhängig vom Hauptprogramm auszutauschen. Leider ist es beim aktuellem Aufbau nicht möglich, auf diesem Weg
+weitere Produkte hinzuzufügen. Die Klasse FileProductLoader, mit der Daten aus einer CSV-Datei geladen werden, muss sämtliche Produkt-Klassen kennen.
