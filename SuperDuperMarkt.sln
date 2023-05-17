@@ -7,8 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperDuperMarkt", "SuperDup
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0C7CD6E5-97BB-441F-BD6C-55907CCAB12D}"
 	ProjectSection(SolutionItems) = preProject
-		Dokumentation (DE).txt = Dokumentation (DE).txt
+		Dokumentation %28DE%29.txt = Dokumentation %28DE%29.txt
 		README.md = README.md
+		SuperDuperMarkt Aufgabenstellung.pdf = SuperDuperMarkt Aufgabenstellung.pdf
 	EndProjectSection
 EndProject
 Global
